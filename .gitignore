@@ -1,0 +1,14 @@
+.vs/
+out/
+include/
+bibliotheque_cours/
+x64/
+*.coverage
+*.vcxproj
+*.json
+*.sln
+*cmake
+*.bin
+*.filters
+*.user
+*.txt
