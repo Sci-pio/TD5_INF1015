@@ -12,8 +12,16 @@ struct Noeud
 	friend class Iterateur<T>;
 public:
 	//TODO: Constructeur(s).
+	Noeud(const T& donnee): donnee_(donnee) { /*kamil: j'ai limpression quil faudrait */ };
 private:
 	//TODO: Attributs d'un noeud.
+	shared_ptr<Noeud<T>> suivant_= past_end;
+	unique_ptr<Noeud<T>> precedent_ = past_end;
+	T donnee_;
+
+	inline static constexpr unique_ptr<Noeud<T>> past_end = nullptr;
+	friend class ListeLiee<T>;
+	friend class Iterateur<T>;
 };
 
 template<typename T>
@@ -22,25 +30,34 @@ class Iterateur
 	friend class ListeLiee<T>;
 public:
 	//TODO: Constructeur(s).
+	Iterateur():position_(Noeud<T>::past_end){} //kamil: dans les notes de cours p.18 ils font comme la prochaine ligne commentee, mais je vois pas comment leur facon de faire assigne une valeur a position_?
+	//Iterateur(unique_ptr<Noeud<T>> position = Noeud<T>::past_end) {}; //kamil: j'ai mis accolades vides pour qu'il arrete de m'achaler comme quoi il n'y a pas de definition
+
+	//Kamil: dans notes de cours p.19, on ne fait pas de fonctions avancer() et reculer(), on surcharge les operator++ et operator--,
+	//et ces operateurs retournent des Iterateur&, ce qu'on ne fait pas ici
 	void avancer()
 	{
 		Expects(position_ != nullptr);
 		//TODO: Changez la position de l'itérateur pour le noeud suivant
+		position_ = position_->suivant_;
 	}
 	void reculer()
 	{
 		//NOTE: On ne demande pas de supporter de reculer à partir de l'itérateur end().
 		Expects(position_ != nullptr);
 		//TODO: Changez la position de l'itérateur pour le noeud précédent
+		position_ = move(position_->precedent_); //move car precedent_ est un unique_ptr
+
 	}
 	T& operator*()
 	{
+		Expects(position_ != Noeud<T>::past_end);
 		return position_->donnee_;
 	}
 	//TODO: Ajouter ce qu'il manque pour que les boucles sur intervalles fonctionnent sur une ListeLiee.
 	bool operator==(const Iterateur<T>& it) const = default;
 private:
-	Noeud<T>* position_;
+	unique_ptr<Noeud<T>> position_;
 };
 
 template<typename T>
@@ -51,12 +68,17 @@ public:
 	using iterator = Iterateur<T>;  // Définit un alias au type, pour que ListeLiee<T>::iterator corresponde au type de son itérateur.
 
 	//TODO: La construction par défaut doit créer une liste vide valide.
+	ListeLiee() : tete_(Noeud<T>::past_end), queue_(Noeud<T>::past_end), taille_(0){}
 	~ListeLiee()
 	{
 		//TODO: Enlever la tête à répétition jusqu'à ce qu'il ne reste aucun élément.
 		// Pour enlever la tête, 
 		// 1. La tête doit devenir le suivant de la tête actuelle.
 		// 2. Ne pas oublier de désallouer le noeud de l'ancienne tête (si pas fait automatiquement).
+		iterator fin = ListeLiee.end();
+		for (iterator pos = ListeLiee.begin(); pos != fin; pos.avancer()) {
+
+		}
 	}
 
 	bool estVide() const  { return taille_ == 0; }
@@ -111,7 +133,7 @@ public:
 	}
 
 private:
-	gsl::owner<Noeud<T>*> tete_;  //NOTE: Vous pouvez changer le type si vous voulez.
+	gsl::owner<Noeud<T>*> tete_;  //NOTE: Vous pouvez changer le type si vous voulez. // 
 
 	Noeud<T>* queue_;
 	unsigned taille_;
