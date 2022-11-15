@@ -2,8 +2,14 @@
 #include "gsl/gsl_assert"
 #include "gsl/pointers"
 
+// Iterateur fait que acces se fait en O(1), alors que juste ListeLiee se fait en O(n)
+// iterator.suivant = nouveau noeud
+// iterateur.suivant.avancer() = nouveau noeud
+
 template<typename T> class ListeLiee;
 template<typename T> class Iterateur;
+
+
 
 template<typename T>
 struct Noeud
@@ -12,16 +18,14 @@ struct Noeud
 	friend class Iterateur<T>;
 public:
 	//TODO: Constructeur(s).
-	Noeud(const T& donnee): donnee_(donnee) { /*kamil: j'ai limpression quil faudrait */ };
+	Noeud(const T& donnee): donnee_(donnee) {};
 private:
 	//TODO: Attributs d'un noeud.
-	shared_ptr<Noeud<T>> suivant_= past_end;
-	unique_ptr<Noeud<T>> precedent_ = past_end;
+	Noeud<T>* suivant_= past_end;
+	Noeud<T>* precedent_ = past_end;
 	T donnee_;
 
-	inline static constexpr unique_ptr<Noeud<T>> past_end = nullptr;
-	friend class ListeLiee<T>;
-	friend class Iterateur<T>;
+	inline static constexpr Noeud<T>* past_end = nullptr;
 };
 
 template<typename T>
@@ -30,11 +34,7 @@ class Iterateur
 	friend class ListeLiee<T>;
 public:
 	//TODO: Constructeur(s).
-	Iterateur():position_(Noeud<T>::past_end){} //kamil: dans les notes de cours p.18 ils font comme la prochaine ligne commentee, mais je vois pas comment leur facon de faire assigne une valeur a position_?
-	//Iterateur(unique_ptr<Noeud<T>> position = Noeud<T>::past_end) {}; //kamil: j'ai mis accolades vides pour qu'il arrete de m'achaler comme quoi il n'y a pas de definition
-
-	//Kamil: dans notes de cours p.19, on ne fait pas de fonctions avancer() et reculer(), on surcharge les operator++ et operator--,
-	//et ces operateurs retournent des Iterateur&, ce qu'on ne fait pas ici
+	Iterateur(unique_ptr<Noeud<T>> position = Noeud<T>::past_end) {}; 
 	void avancer()
 	{
 		Expects(position_ != nullptr);
@@ -46,7 +46,7 @@ public:
 		//NOTE: On ne demande pas de supporter de reculer à partir de l'itérateur end().
 		Expects(position_ != nullptr);
 		//TODO: Changez la position de l'itérateur pour le noeud précédent
-		position_ = move(position_->precedent_); //move car precedent_ est un unique_ptr
+		position_ = position_->precedent_; //move car precedent_ est un unique_ptr
 
 	}
 	T& operator*()
@@ -57,7 +57,7 @@ public:
 	//TODO: Ajouter ce qu'il manque pour que les boucles sur intervalles fonctionnent sur une ListeLiee.
 	bool operator==(const Iterateur<T>& it) const = default;
 private:
-	unique_ptr<Noeud<T>> position_;
+	Noeud<T>* position_;
 };
 
 template<typename T>
@@ -90,27 +90,33 @@ public:
 	// Ajoute à la fin de la liste.
 	void push_back(const T& item)
 	{
-		//TODO: Vous devez créer un nouveau noeud en mémoire.
-		//TODO: Si la liste était vide, ce nouveau noeud est la tête et la queue;
-		// autrement, ajustez la queue et pointeur(s) adjacent(s) en conséquence.
+		Noeud<T>* nouveauNoeud = new Noeud<T>(item);
+		if (estVide())
+			tete_ = nouveauNoeud;
+		else {
+			queue_->suivant_ = nouveauNoeud;
+			nouveauNoeud->precedent_ = queue_;
+		}
+		queue_ = nouveauNoeud;
+		taille_++;
+			
 	}
 
 	// Insère avant la position de l'itérateur.
 	iterator insert(iterator it, const T& item)
 	{
-		//NOTE: Pour simplifier, vous n'avez pas à supporter l'insertion à la fin (avant "past the end"),
-		// ni l'insertion au début (avant la tête), dans cette méthode.
-		//TODO:
-		// 1. Créez un nouveau noeud initialisé avec item.
-		// 2. Modifiez les attributs suivant_ et precedent_ du nouveau noeud
-		//    afin que le nouveau noeud soit lié au noeud précédent et suivant
-		//    à l'endroit où il est inséré selon notre itérateur.
-		// 3. Modifiez l'attribut precedent_ du noeud après la position d'insertion
-		//    (l'itérateur) afin qu'il pointe vers le noeud créé.
-		// 4. Modifiez l'attribut suivant_ du noeud avant la position d'insertion
-		//    (précédent de l'itérateur) afin qu'il point vers le noeud créé.
-		// 5. Incrémentez la taille de la liste.
-		// 6. Retournez un nouvel itérateur initialisé au nouveau noeud.
+		Noeud<T>* nouveauNoeud = new Noeud(item);
+		Noeud<T>* noeudSuivant = it.position_;
+		Noeud<T>* noeudPrecedent = noeudSuivant->precedent_;
+		nouveauNoeud->suivant_ = noeudSuivant;
+		nouveauNoeud->precedent_ = noeudPrecedent;
+		noeudSuivant->precedent_ = nouveauNoeud;
+		if (noeudPrecedent == Noeud<T>::past_end)
+			tete_ = nouveauNoeud;
+		else
+			tete_ = nouveauNoeud;
+		taille_++;
+		return iterator(nouveauNoeud);
 	}
 
 	// Enlève l'élément à la position it et retourne un itérateur vers le suivant.
