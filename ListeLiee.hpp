@@ -10,52 +10,56 @@ template<typename T> class ListeLiee;
 template<typename T> class Iterateur;
 
 
-
 template<typename T>
 struct Noeud
 {
 	friend class ListeLiee<T>;
 	friend class Iterateur<T>;
+
 public:
-	//TODO: Constructeur(s).
-	Noeud(const T& donnee): donnee_(donnee) {};
+	Noeud(const T& donnee) : donnee_(donnee) {};
+
 private:
-	//TODO: Attributs d'un noeud.
-	Noeud<T>* suivant_= past_end;
-	Noeud<T>* precedent_ = past_end;
 	T donnee_;
 
-	inline static constexpr Noeud<T>* past_end = nullptr;
+	Noeud<T>* precedent_ = NOEUD_NUL;
+	Noeud<T>* prochain_ = NOEUD_NUL;
+
+	inline static constexpr Noeud<T>* NOEUD_NUL = nullptr;
 };
+
 
 template<typename T>
 class Iterateur
 {
 	friend class ListeLiee<T>;
+
 public:
-	//TODO: Constructeur(s).
-	Iterateur(unique_ptr<Noeud<T>> position = Noeud<T>::past_end) {}; 
+	Iterateur(Noeud<T>* position = Noeud<T>::NOEUD_NUL) : position_(position) {};
+
 	void avancer()
 	{
-		Expects(position_ != nullptr);
-		//TODO: Changez la position de l'itérateur pour le noeud suivant
-		position_ = position_->suivant_;
+		Expects(position_ != Noeud<T>::NOEUD_NUL);
+		position_ = position_->prochain_;
 	}
+
 	void reculer()
 	{
-		//NOTE: On ne demande pas de supporter de reculer à partir de l'itérateur end().
-		Expects(position_ != nullptr);
-		//TODO: Changez la position de l'itérateur pour le noeud précédent
-		position_ = position_->precedent_; //move car precedent_ est un unique_ptr
-
+		Expects(position_ != Noeud<T>::NOEUD_NUL);
+		position_ = position_->precedent_;
 	}
+
 	T& operator*()
 	{
-		Expects(position_ != Noeud<T>::past_end);
+		Expects(position_ != Noeud<T>::NOEUD_NUL);
 		return position_->donnee_;
 	}
-	//TODO: Ajouter ce qu'il manque pour que les boucles sur intervalles fonctionnent sur une ListeLiee.
-	bool operator==(const Iterateur<T>& it) const = default;
+
+	bool operator==(const Iterateur<T>& it) const
+	{
+		return position_->donnee_ == it.position_.donnee_;
+	}
+
 private:
 	Noeud<T>* position_;
 };
@@ -65,82 +69,79 @@ class ListeLiee
 {
 	friend class Iterateur<T>;
 public:
-	using iterator = Iterateur<T>;  // Définit un alias au type, pour que ListeLiee<T>::iterator corresponde au type de son itérateur.
+	using iterator = Iterateur<T>;
 
-	//TODO: La construction par défaut doit créer une liste vide valide.
-	ListeLiee() : tete_(Noeud<T>::past_end), queue_(Noeud<T>::past_end), taille_(0){}
+	ListeLiee() : tete_(Noeud<T>::NOEUD_NUL), queue_(Noeud<T>::NOEUD_NUL), taille_(0) {}
 	~ListeLiee()
 	{
-		//TODO: Enlever la tête à répétition jusqu'à ce qu'il ne reste aucun élément.
-		// Pour enlever la tête, 
-		// 1. La tête doit devenir le suivant de la tête actuelle.
-		// 2. Ne pas oublier de désallouer le noeud de l'ancienne tête (si pas fait automatiquement).
-		iterator fin = ListeLiee.end();
-		for (iterator pos = ListeLiee.begin(); pos != fin; pos.avancer()) {
-
+		while (tete_ != queue_)
+		{
+			tete_ = tete_->prochain_;
+			delete tete_->precedent_;
 		}
+
+		delete tete_;
 	}
 
-	bool estVide() const  { return taille_ == 0; }
+	bool estVide() const { return taille_ == 0; }
 	unsigned size() const { return taille_; }
-	//NOTE: to_address (C++20) permet que ce même code fonctionne que vous utilisiez des pointeurs bruts ou intelligents (ça prend le pointeur brut associé au pointeur intelligent, s'il est intelligent).
-	iterator begin()  { return {to_address(tete_)}; }
-	iterator end()    { return {to_address(queue_->suivant_)}; }
+	iterator begin() { return { to_address(tete_) }; }
+	iterator end() { return { to_address(queue_->precedent_) }; }
 
-	// Ajoute à la fin de la liste.
 	void push_back(const T& item)
 	{
 		Noeud<T>* nouveauNoeud = new Noeud<T>(item);
 		if (estVide())
 			tete_ = nouveauNoeud;
 		else {
-			queue_->suivant_ = nouveauNoeud;
+			queue_->prochain_ = nouveauNoeud;
 			nouveauNoeud->precedent_ = queue_;
 		}
 		queue_ = nouveauNoeud;
 		taille_++;
-			
 	}
 
-	// Insère avant la position de l'itérateur.
 	iterator insert(iterator it, const T& item)
 	{
 		Noeud<T>* nouveauNoeud = new Noeud(item);
-		Noeud<T>* noeudSuivant = it.position_;
-		Noeud<T>* noeudPrecedent = noeudSuivant->precedent_;
-		nouveauNoeud->suivant_ = noeudSuivant;
-		nouveauNoeud->precedent_ = noeudPrecedent;
-		noeudSuivant->precedent_ = nouveauNoeud;
-		if (noeudPrecedent == Noeud<T>::past_end)
+		Noeud<T>* prochainNoeud = it.position_;
+		Noeud<T>* precedentNoeud = prochainNoeud->precedent_;
+
+		nouveauNoeud->prochain_ = prochainNoeud;
+		nouveauNoeud->precedent_ = precedentNoeud;
+		prochainNoeud->precedent_ = nouveauNoeud;
+
+		if (precedentNoeud == Noeud<T>::NOEUD_NUL)
 			tete_ = nouveauNoeud;
 		else
-			tete_ = nouveauNoeud;
+			precedentNoeud->prochain_ = nouveauNoeud;
 		taille_++;
+
 		return iterator(nouveauNoeud);
 	}
 
-	// Enlève l'élément à la position it et retourne un itérateur vers le suivant.
 	iterator erase(iterator it)
 	{
-		//TODO: Enlever l'élément à la position de l'itérateur.
-		//  1. Le pointeur vers le Noeud à effacer est celui dans l'itérateur.
-		//  2. Modifiez l'attribut suivant_ du noeud précédent pour que celui-ci
-		//     pointe vers le noeud suivant la position de l'itérateur (voir 1.).
-		//  3. Modifiez l'attribut precedent_ du noeud suivant la position de
-		//     l'itérateur pour que celui-ci pointe vers le noeud précédent
-		//     de la position de l'itérateur (voir 1.).
-		//  4. Désallouez le Noeud à effacer (voir 1.).
-		//  5. Décrémentez la taille de la liste
-		//  6. Retournez un itérateur vers le suivant du Noeud effacé.
-		//TODO: On veut supporter d'enlever le premier élément de la liste,
-		//  donc en 2. il se peut qu'il n'y ait pas de précédent et alors c'est
-		//  la tête de liste qu'il faut ajuster.
-		//NOTE: On ne demande pas de supporter d'effacer le dernier élément (c'est similaire au cas pour enlever le premier).
+		Noeud<T>* noeudIteree = it.position_;
+		Noeud<T>* prochainNoeud = noeudIteree->prochain_;
+		Noeud<T>* precendentNoeud = noeudIteree->precedent_;
+
+		prochainNoeud->precedent_ = precendentNoeud;
+
+		if (precendentNoeud == Noeud<T>::NOEUD_NUL)
+			tete_ = prochainNoeud;
+		else
+			precendentNoeud->prochain_ = prochainNoeud;
+
+		delete noeudIteree;
+		taille_--;
+
+		return prochainNoeud;
 	}
 
 private:
-	gsl::owner<Noeud<T>*> tete_;  //NOTE: Vous pouvez changer le type si vous voulez. // 
-
+	gsl::owner<Noeud<T>*> tete_;
 	Noeud<T>* queue_;
+
 	unsigned taille_;
 };

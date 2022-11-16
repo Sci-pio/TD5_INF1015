@@ -95,7 +95,7 @@ int main()
 	vector<Vilain> vilains = lireVectorDuFichier<Vilain>("vilains.bin");
 	vector<unique_ptr<Personnage>> peronnages;  // Doit être des pointeurs pour le polymorphisme, l'énoncé ne force pas les unique_ptr.
 
-	#if 1 //TODO: Vous n'avez pas à conserver ces affichages pour le TD5, ils sont pour le solutionnaire du TD4:
+	#if 0 //TODO: Vous n'avez pas à conserver ces affichages pour le TD5, ils sont pour le solutionnaire du TD4:
 	cout << separateurSections << "Heros:" << endl;
 	afficherAffichables(heros);
 
@@ -126,6 +126,17 @@ int main()
 	//}
 
 	//TODO: Transférez les héros du vecteur heros dans une ListeLiee.
+	ListeLiee<int> listeLiee;
+	listeLiee.push_back(2);
+	listeLiee.push_back(3);
+	listeLiee.push_back(3);
+
+	Iterateur<int> it(listeLiee.begin());
+	it.avancer();
+	it.reculer();
+
+	cout << *it;
+	ListeLiee<double> de;
 
 	//TODO: Créez un itérateur sur la liste liée à la position du héros Alucard.  Servez-vous de la fonction trouverParNom définie plus haut.
 
