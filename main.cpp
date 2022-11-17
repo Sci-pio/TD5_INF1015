@@ -137,6 +137,7 @@ int main()
 
 	cout << *it;
 	ListeLiee<double> de;
+	//COMMENTAIRe de test
 
 	//TODO: Créez un itérateur sur la liste liée à la position du héros Alucard.  Servez-vous de la fonction trouverParNom définie plus haut.
 
