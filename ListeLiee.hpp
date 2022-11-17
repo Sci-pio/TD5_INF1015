@@ -138,7 +138,7 @@ public:
 
 		return prochainNoeud;
 	}
-
+	//TRERERE
 private:
 	gsl::owner<Noeud<T>*> tete_;
 	Noeud<T>* queue_;
