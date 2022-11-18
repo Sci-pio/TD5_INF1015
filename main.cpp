@@ -162,26 +162,33 @@ int main()
 	listeHeros.insert(it2, heroBidon); 
 
 	//TODO: Assurez-vous que la taille de la liste est correcte après l'ajout.
-	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a ajouté un Héros bidon. " << endl;
+	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a ajouté un héros bidon. " << endl;
 
 	//TODO: Reculez votre itérateur jusqu'au héros Mario et effacez-le en utilisant l'itérateur, puis affichez le héros suivant dans la liste (devrait êter "Naked Snake/John").
 	for (Iterateur<Heros> it = it2; it != listeHeros.begin(); it.reculer()) { 
 		if ((*it).getNom() == "Mario") {
 			cout << "Mario trouvé\n";
-			Iterateur<Heros> suivant = listeHeros.erase(it);
+			Iterateur<Heros> suivant = listeHeros.effacer(it);
 			(*suivant).afficher(cout);
 		}
 	}
 
-	//TODO: Assurez-vous que la taille de la liste est correcte après le retrait. //Kamil: appeler .size() sur la listeLiee apres un erase fait du caca
-	//listeHeros.size();
-	//cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a retiré le Héros Naked Snake / John. " << endl;
+	//TODO: Assurez-vous que la taille de la liste est correcte après le retrait.
+	listeHeros.size();
+	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a retiré le héros Naked Snake / John. " << endl;
 
 	//TODO: Effacez le premier élément de la liste.
-
+	Iterateur<Heros> premierElement = listeHeros.begin();
+	listeHeros.effacer(premierElement);
+	cout << separateurSections;
 	//TODO: Affichez votre liste de héros en utilisant un itérateur. La liste débute avec le héros Randi, n'a pas Mario, et le précédent de "Aya Brea" est ce que vous avez inséré. Servez-vous des methodes begin et end de la liste...
+	Iterateur<Heros> fin = listeHeros.end();
+	for (Iterateur<Heros> it = listeHeros.begin(); it != fin; it.avancer()) {
+		(*it).afficher(cout);
+	}
 
 	//TODO: Refaite le même affichage mais en utilisant une simple boucle "for" sur intervalle.
+	//kamil: je ne comprends pas cest quoi la difference entre ce TODO et le precedent??
 
 	//TODO: Utilisez un conteneur pour avoir les héros en ordre alphabétique (voir point 2 de l'énoncé).
 
