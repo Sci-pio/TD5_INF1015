@@ -123,9 +123,8 @@ int main()
 		cout << "=";
 	}
 	#endif
-	//}
-
-	//TODO: Transférez les héros du vecteur heros dans une ListeLiee.
+	
+	//tests leo temporaires
 	ListeLiee<int> listeLiee;
 	listeLiee.push_back(2);
 	listeLiee.push_back(3);
@@ -134,20 +133,49 @@ int main()
 	Iterateur<int> it(listeLiee.begin());
 	it.avancer();
 	it.reculer();
-
-	cout << *it;
+	cout << *it << endl;
 	ListeLiee<double> de;
-	//COMMENTAIRe de test
 
+	cout << separateurSections;
+	//TODO: Transférez les héros du vecteur heros dans une ListeLiee. // Kamil: j'ai juste fait une copie dans le fond
+	ListeLiee<Heros> listeHeros;
+	for (int i = 0; i < heros.size(); i++) { listeHeros.push_back(heros[i]); }
+	cout << "La liste de heros a une taille de " << listeHeros.size() << endl;
+	
 	//TODO: Créez un itérateur sur la liste liée à la position du héros Alucard.  Servez-vous de la fonction trouverParNom définie plus haut.
+
+	Iterateur<Heros> it1 = trouverParNom(listeHeros, "Alucard");
 
 	//TODO: Servez-vous de l'itérateur créé précédemment pour trouver l'héroine Aya Brea, en sachant qu'elle se trouve plus loin dans la liste, en itérant sur les éléments.
 
+	Iterateur<Heros> it2;
+	for (Iterateur<Heros> it = it1; it != listeHeros.end(); it.avancer()) {
+		if ((*it).getNom() == "Aya Brea") {
+			it2 = it;
+			cout << "Aya Brea trouvée\n"; //kamil: affichage temporaire de test
+		}
+	}
+
 	//TODO: Ajouter un hero bidon à la liste avant Aya Brea en vous servant de l'itérateur.
+	
+	Heros heroBidon("Hero bidon de test", "Jeu video", "Ennemi");
+	listeHeros.insert(it2, heroBidon); 
+
 	//TODO: Assurez-vous que la taille de la liste est correcte après l'ajout.
+	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a ajouté un Héros bidon. " << endl;
 
 	//TODO: Reculez votre itérateur jusqu'au héros Mario et effacez-le en utilisant l'itérateur, puis affichez le héros suivant dans la liste (devrait êter "Naked Snake/John").
-	//TODO: Assurez-vous que la taille de la liste est correcte après le retrait.
+	for (Iterateur<Heros> it = it2; it != listeHeros.begin(); it.reculer()) { 
+		if ((*it).getNom() == "Mario") {
+			cout << "Mario trouvé\n";
+			Iterateur<Heros> suivant = listeHeros.erase(it);
+			(*suivant).afficher(cout);
+		}
+	}
+
+	//TODO: Assurez-vous que la taille de la liste est correcte après le retrait. //Kamil: appeler .size() sur la listeLiee apres un erase fait du caca
+	//listeHeros.size();
+	//cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a retiré le Héros Naked Snake / John. " << endl;
 
 	//TODO: Effacez le premier élément de la liste.
 

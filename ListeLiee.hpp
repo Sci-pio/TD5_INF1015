@@ -55,10 +55,10 @@ public:
 		return position_->donnee_;
 	}
 
-	bool operator==(const Iterateur<T>& it) const
-	{
-		return position_->donnee_ == it.position_.donnee_;
-	}
+	bool operator==(const Iterateur<T>& it) const = default;
+	//{
+	//	return position_->donnee_ == it.position_.donnee_;
+	//}
 
 private:
 	Noeud<T>* position_;
@@ -86,7 +86,8 @@ public:
 	bool estVide() const { return taille_ == 0; }
 	unsigned size() const { return taille_; }
 	iterator begin() { return { to_address(tete_) }; }
-	iterator end() { return { to_address(queue_->precedent_) }; }
+	iterator end() { return { to_address(queue_->prochain_) }; }
+
 
 	void push_back(const T& item)
 	{
