@@ -60,6 +60,12 @@ public:
 	//	return position_->donnee_ == it.position_.donnee_;
 	//}
 
+	Iterateur<T>& operator++ () {
+		Expects(position_ != Noeud<T>::NOEUD_NUL);
+		position_ = position_->prochain_;
+		return *this;
+	}
+
 private:
 	Noeud<T>* position_;
 };
@@ -142,31 +148,7 @@ public:
 	iterator effacer(iterator it)
 	{
 		Noeud<T>* prochainNoeud = (it.position_)->prochain_;
-		Noeud<T>* precedentNoeud = (it.position_)->precedent_;
-		
-		//TODO: Enlever l'élément à la position de l'itérateur.
-		//  1. Le pointeur vers le Noeud à effacer est celui dans l'itérateur.
-		//  2. Modifiez l'attribut suivant_ du noeud précédent pour que celui-ci
-		//     pointe vers le noeud suivant la position de l'itérateur (voir 1.).
-		//  3. Modifiez l'attribut precedent_ du noeud suivant la position de
-		//     l'itérateur pour que celui-ci pointe vers le noeud précédent
-		//     de la position de l'itérateur (voir 1.).
-		//if (precedentNoeud == Noeud<T>::NOEUD_NUL)
-		//	tete_ = prochainNoeud;
-		//else
-		//	precedentNoeud->prochain_ = prochainNoeud;
-		//prochainNoeud->precedent_ = precedentNoeud;
-		////  4. Désallouez le Noeud à effacer (voir 1.).
-		//delete it.position_;
-		////  5. Décrémentez la taille de la liste
-		//taille_--;
-		//  6. Retournez un itérateur vers le suivant du Noeud effacé.
-		return iterator(prochainNoeud);
-		//TODO: On veut supporter d'enlever le premier élément de la liste,
-		//  donc en 2. il se peut qu'il n'y ait pas de précédent et alors c'est
-		//  la tête de liste qu'il faut ajuster.
-		//NOTE: On ne demande pas de supporter d'effacer le dernier élément (c'est similaire au cas pour enlever le premier).
-
+		return prochainNoeud;
 	}
 private:
 	gsl::owner<Noeud<T>*> tete_;
