@@ -80,9 +80,6 @@ ListeLiee<T>::iterator trouverParNom(ListeLiee<T>& liste, const string& nom)
 int main()
 {
 	#pragma region "Bibliothèque du cours"
-	// Permet sous Windows les "ANSI escape code" pour changer de couleur
-	// https://en.wikipedia.org/wiki/ANSI_escape_code ; les consoles Linux/Mac
-	// les supportent normalement par défaut.
 	bibliotheque_cours::activerCouleursAnsi();
 	#pragma endregion
 	
@@ -90,53 +87,10 @@ int main()
 	
 	static const string separateurSections = "\033[95m" + trait + "\033[0m\n";
 
-	//{ Solutionnaire du TD4:
 	vector<Heros> heros = lireVectorDuFichier<Heros>("heros.bin");
 	vector<Vilain> vilains = lireVectorDuFichier<Vilain>("vilains.bin");
-	vector<unique_ptr<Personnage>> peronnages;  // Doit être des pointeurs pour le polymorphisme, l'énoncé ne force pas les unique_ptr.
+	vector<unique_ptr<Personnage>> peronnages;
 
-	#if 0 //TODO: Vous n'avez pas à conserver ces affichages pour le TD5, ils sont pour le solutionnaire du TD4:
-	cout << separateurSections << "Heros:" << endl;
-	afficherAffichables(heros);
-
-	cout << separateurSections << "Vilains:" << endl;
-	afficherAffichables(vilains);
-
-	for (auto& h : heros)
-		peronnages.push_back(make_unique<Heros>(h));
-
-	for (auto& v : vilains)
-		peronnages.push_back(make_unique<Vilain>(v));
-
-	peronnages.push_back(make_unique<VilainHeros>(vilains[1], heros[2]));
-
-	cout << separateurSections << "Personnages:" << endl;
-	afficherAffichables(peronnages);
-
-	cout << separateurSections << "Un autre vilain heros (exemple de l'énoncé du TD), d'une autre couleur:" << endl;
-	VilainHeros kefkaCrono(vilains[2], heros[0]);
-	kefkaCrono.changerCouleur(cout,3);
-	kefkaCrono.afficher(cout);
-	
-	for (int i : range(5)) { // Pour la couverture de code des couleurs (on aurait aussi pu éliminer le code pour les couleurs non utilisées).
-		kefkaCrono.changerCouleur(cout,i);
-		cout << "=";
-	}
-	#endif
-	
-	//tests leo temporaires
-	ListeLiee<int> listeLiee;
-	listeLiee.push_back(2);
-	listeLiee.push_back(3);
-	listeLiee.push_back(3);
-
-	Iterateur<int> it(listeLiee.begin());
-	it.avancer();
-	it.reculer();
-	cout << *it << endl;
-	ListeLiee<double> de;
-
-	cout << separateurSections;
 	//TODO: Transférez les héros du vecteur heros dans une ListeLiee. // Kamil: j'ai juste fait une copie dans le fond
 	ListeLiee<Heros> listeHeros;
 	for (int i = 0; i < heros.size(); i++) { listeHeros.push_back(heros[i]); }
@@ -144,14 +98,14 @@ int main()
 	
 	//TODO: Créez un itérateur sur la liste liée à la position du héros Alucard.  Servez-vous de la fonction trouverParNom définie plus haut.
 
-	Iterateur<Heros> it1 = trouverParNom(listeHeros, "Alucard");
+	Iterateur<Heros> itAlucard = trouverParNom(listeHeros, "Alucard");
 
 	//TODO: Servez-vous de l'itérateur créé précédemment pour trouver l'héroine Aya Brea, en sachant qu'elle se trouve plus loin dans la liste, en itérant sur les éléments.
 
-	Iterateur<Heros> it2;
-	for (Iterateur<Heros> it = it1; it != listeHeros.end(); it.avancer()) {
+	Iterateur<Heros> itAyaBrea;
+	for (Iterateur<Heros> it = itAlucard; it != listeHeros.end(); it.avancer()) {
 		if ((*it).getNom() == "Aya Brea") {
-			it2 = it;
+			itAyaBrea = it;
 			cout << "Aya Brea trouvée\n"; //kamil: affichage temporaire de test
 		}
 	}
@@ -159,17 +113,17 @@ int main()
 	//TODO: Ajouter un hero bidon à la liste avant Aya Brea en vous servant de l'itérateur.
 	
 	Heros heroBidon("Hero bidon de test", "Jeu video", "Ennemi");
-	listeHeros.insert(it2, heroBidon); 
+	listeHeros.insert(itAyaBrea, heroBidon); 
 
 	//TODO: Assurez-vous que la taille de la liste est correcte après l'ajout.
 	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a ajouté un héros bidon. " << endl;
 
 	//TODO: Reculez votre itérateur jusqu'au héros Mario et effacez-le en utilisant l'itérateur, puis affichez le héros suivant dans la liste (devrait êter "Naked Snake/John").
-	for (Iterateur<Heros> it = it2; it != listeHeros.begin(); it.reculer()) { 
+	for (Iterateur<Heros> it = itAyaBrea; it != listeHeros.begin(); it.reculer() ) {
 		if ((*it).getNom() == "Mario") {
 			cout << "Mario trouvé\n";
-			Iterateur<Heros> suivant = listeHeros.effacer(it);
-			(*suivant).afficher(cout);
+			it = listeHeros.erase(it);
+			(*it).afficher(cout);
 		}
 	}
 
@@ -179,8 +133,9 @@ int main()
 
 	//TODO: Effacez le premier élément de la liste.
 	Iterateur<Heros> premierElement = listeHeros.begin();
-	listeHeros.effacer(premierElement);
+	listeHeros.erase(premierElement);
 	cout << separateurSections;
+
 	//TODO: Affichez votre liste de héros en utilisant un itérateur. La liste débute avec le héros Randi, n'a pas Mario, et le précédent de "Aya Brea" est ce que vous avez inséré. Servez-vous des methodes begin et end de la liste...
 	Iterateur<Heros> fin = listeHeros.end();
 	for (Iterateur<Heros> it = listeHeros.begin(); it != fin; it.avancer()) {

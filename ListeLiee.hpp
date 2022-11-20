@@ -129,7 +129,7 @@ public:
 
 		prochainNoeud->precedent_ = precendentNoeud;
 
-		if (precendentNoeud == Noeud<T>::NOEUD_NUL)
+		if (it == tete_)
 			tete_ = prochainNoeud;
 		else
 			precendentNoeud->prochain_ = prochainNoeud;
