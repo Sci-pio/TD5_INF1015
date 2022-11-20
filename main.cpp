@@ -1,4 +1,9 @@
-﻿#include "Personnage.hpp"
+﻿// Auteurs: Leonard Pouliot (2150965) et Kamil Maarite (2152653)
+// Date: 20 novembre 2022
+// Cours: INF1015
+// Nom de la classe: main.cpp
+
+#include "Personnage.hpp"
 #include "Heros.hpp"
 #include "Vilain.hpp"
 #include "VilainHeros.hpp"
@@ -93,7 +98,9 @@ int main()
 	vector<Vilain> vilains = lireVectorDuFichier<Vilain>("vilains.bin");
 	vector<unique_ptr<Personnage>> peronnages;
 
-	//TODO: Transférez les héros du vecteur heros dans une ListeLiee. // Kamil: j'ai juste fait une copie dans le fond
+	//NOTE: Les consignes n'indiquaient pas que nos affichages devaient être faits en couleur, donc nous ne l'avons pas fait. 
+
+	//TODO: Transférez les héros du vecteur heros dans une ListeLiee. 
 	ListeLiee<Heros> listeHeros;
 	for (int i = 0; i < heros.size(); i++) { listeHeros.push_back(heros[i]); }
 	cout << "La liste de heros a une taille de " << listeHeros.size() << endl;
@@ -108,7 +115,7 @@ int main()
 	for (Iterateur<Heros> it = itAlucard; it != listeHeros.end(); it.avancer()) {
 		if ((*it).getNom() == "Aya Brea") {
 			itAyaBrea = it;
-			cout << "Aya Brea trouvée\n"; //kamil: affichage temporaire de test
+			cout << "Aya Brea trouvée\n"; 
 		}
 	}
 
@@ -120,7 +127,7 @@ int main()
 	//TODO: Assurez-vous que la taille de la liste est correcte après l'ajout.
 	cout << "La liste de heros a maintenant une taille de " << listeHeros.size() << " car on a ajouté un héros bidon. " << endl;
 
-	//TODO: Reculez votre itérateur jusqu'au héros Mario et effacez-le en utilisant l'itérateur, puis affichez le héros suivant dans la liste (devrait êter "Naked Snake/John").
+	//TODO: Reculez votre itérateur jusqu'au héros Mario et effacez-le en utilisant l'itérateur, puis affichez le héros suivant dans la liste (devrait être "Naked Snake/John").
 	for (Iterateur<Heros> it = itAyaBrea; it != listeHeros.begin(); it.reculer() ) {
 		if ((*it).getNom() == "Mario") {
 			cout << "Mario trouvé\n";
@@ -148,16 +155,28 @@ int main()
 	}
 	cout << separateurSections;
 	//TODO: Refaite le même affichage mais en utilisant une simple boucle "for" sur intervalle.
+	cout << "Heros: \n";
+
 	for (Heros& heros : listeHeros) {
 		heros.afficher(cout);
 	}
-
+	cout << separateurSections;
 	//TODO: Utilisez un conteneur pour avoir les héros en ordre alphabétique (voir point 2 de l'énoncé).
-	//kamil: jai verifie dans le debugger, la map est en ordre alphabetique
 	map<string, Heros> uneMap;
 	for (Heros& heros: listeHeros) {
 		uneMap.map::insert({heros.getNom(), heros});
 	}
+
+	Heros rockman = uneMap["Rockman/Mega Man"];
+	rockman.afficher(cout);
+
+	// Question 2.2
+	// La complexité de cette recherche est O(log(n)), où n est la taille de la map. En effet, comme les éléments dans uneMap sont triés en ordre d'alphabétique de leur key (le nom du héros qui est stockée dans la deuxième valeur de la pair), le nombre d'opérations élémentaires en O(1) à affectuer pour trouver un élément est en moyenne logarithmique par rapport à la taille de la map. L'algorithme se fait ainsi: on regarde au milieu du tableau, et selon si la valeur observée est plus grande ou plus petite que celle qu'on recherche, l'algorithme décide en O(1) (simple comparaison) quelle moitié considérer ensuite. Tant qu'il y a plus d'un élément dans le tableau à considérer et que la key voulue n'a pas été trouvée, ce processus continue. Le nombre de comparaisons à effectuer va donc de 1 (si le premier élément considéré est la bon) au log(base 2) de n, ce qui est la même chose que le log (base 10) de n / log (base 2) n, donc on peut écrire seulement log(n). En moyenne, la complexité est en fait est un multiple inférieur à 1 * log(n), car il est possible de trouver la key avant de se rendre jusqu'au bout de l'arbre, donc la complexité reste O(log(n)). 
+
+	// Question 2.3
+	// La liste liée effectue ses recherches en O(n) où n est la taille de la liste, car dépendemment de la position relative de l'élément cherché par rapport à l'itérateur, le nombre d'opérations élémentaires à effectuer (faire avancer ou reculer l'itérateur et comparer le nom) est proportionnel à n. Notons que dans ce tp les consignes nous indiquaient si l'élément recherché était avant ou après la position de notre itérateur, mais en pratique cette information n'est pas connue donc il faudrait commencer au début ou à la fin de la liste pour une recherche - pour trouver Aya Brea, il aurait fallu avancer l'itérateur et comparer le nom 9 fois. Pour de grands ensembles de données, le O(log(n)) de la map battrait le O(n) de la liste liée, et même s'il n'y a que 9 héros ici le logarithme l'emporte pareil en moyenne, car log(base 2) de n est plus petit que n pour tout n. Dans certains cas, par exemple si on cherche le deuxième élément de la liste liée et qu'on commence au début, la liste liée sera plus rapide, mais en moyenne ce ne sera pas le cas. 
+
+
 
 	//TODO: Assurez-vous de n'avoir aucune ligne non couverte dans les classes pour la liste liée.  Il peut y avoir des lignes non couvertes dans les personnages...
 }

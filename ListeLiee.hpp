@@ -56,9 +56,6 @@ public:
 	}
 
 	bool operator==(const Iterateur<T>& it) const = default;
-	//{
-	//	return position_->donnee_ == it.position_.donnee_;
-	//}
 
 	Iterateur<T>& operator++ () {
 		Expects(position_ != Noeud<T>::NOEUD_NUL);
@@ -145,11 +142,7 @@ public:
 
 		return prochainNoeud;
 	}
-	iterator effacer(iterator it)
-	{
-		Noeud<T>* prochainNoeud = (it.position_)->prochain_;
-		return prochainNoeud;
-	}
+
 private:
 	gsl::owner<Noeud<T>*> tete_;
 	Noeud<T>* queue_;
