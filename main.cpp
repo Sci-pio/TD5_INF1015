@@ -88,7 +88,7 @@ int main()
 	
 	testsPourCouvertureLectureBinaire();
 	
-	static const string separateurSections = "\033[95m" + +trait + "\033[0m\n";
+	static const string separateurSections = "\033[95m" + trait + "\033[0m\n";
 
 	vector<Heros> heros = lireVectorDuFichier<Heros>("heros.bin");
 	vector<Vilain> vilains = lireVectorDuFichier<Vilain>("vilains.bin");
@@ -159,16 +159,16 @@ int main()
 	//Refaite le même affichage mais en utilisant une simple boucle "for" sur intervalle.
 	cout << "Heros: \n";
 
-	for (Heros& heros : listeHeros) {
-		heros.afficher(cout);
+	for (Heros& heros1 : listeHeros) {
+		heros1.afficher(cout);
 	}
 	cout << separateurSections;
 
 
 	//Utilisez un conteneur pour avoir les héros en ordre alphabétique.
 	map<string, Heros> uneMap;
-	for (Heros& heros: listeHeros) {
-		uneMap.map::insert({heros.getNom(), heros});
+	for (Heros& heros2: listeHeros) {
+		uneMap.map::insert({heros2.getNom(), heros2});
 	}
 
 	Heros rockman = uneMap["Rockman/Mega Man"];
