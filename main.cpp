@@ -157,14 +157,14 @@ int main()
 	//TODO: Refaite le même affichage mais en utilisant une simple boucle "for" sur intervalle.
 	cout << "Heros: \n";
 
-	for (Heros& heros : listeHeros) {
-		heros.afficher(cout);
+	for (Heros& heros1 : listeHeros) {
+		heros1.afficher(cout);
 	}
 	cout << separateurSections;
 	//TODO: Utilisez un conteneur pour avoir les héros en ordre alphabétique (voir point 2 de l'énoncé).
 	map<string, Heros> uneMap;
-	for (Heros& heros: listeHeros) {
-		uneMap.map::insert({heros.getNom(), heros});
+	for (Heros& heros2: listeHeros) {
+		uneMap.map::insert({heros2.getNom(), heros2});
 	}
 
 	Heros rockman = uneMap["Rockman/Mega Man"];
