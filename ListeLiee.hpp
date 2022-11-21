@@ -2,10 +2,6 @@
 #include "gsl/gsl_assert"
 #include "gsl/pointers"
 
-// Iterateur fait que acces se fait en O(1), alors que juste ListeLiee se fait en O(n)
-// iterator.suivant = nouveau noeud
-// iterateur.suivant.avancer() = nouveau noeud
-
 template<typename T> class ListeLiee;
 template<typename T> class Iterateur;
 
