@@ -1,10 +1,12 @@
-﻿#pragma once
+﻿// Auteurs: Leonard Pouliot (2150965) et Kamil Maarite (2152653)
+// Date: 20 novembre 2022
+// Cours: INF1015
+// Nom de la classe: ListeeLiee.hpp
+
+#pragma once
 #include "gsl/gsl_assert"
 #include "gsl/pointers"
 
-// Iterateur fait que acces se fait en O(1), alors que juste ListeLiee se fait en O(n)
-// iterator.suivant = nouveau noeud
-// iterateur.suivant.avancer() = nouveau noeud
 
 template<typename T> class ListeLiee;
 template<typename T> class Iterateur;
